@@ -6,7 +6,8 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     define: {
-      'process.env.API_KEY': JSON.stringify(env.API_KEY),
+      // Ensure it falls back to empty string so 'process' is not accessed in browser
+      'process.env.API_KEY': JSON.stringify(env.API_KEY || ''),
     },
   };
 });

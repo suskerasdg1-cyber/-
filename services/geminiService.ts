@@ -1,7 +1,14 @@
 import { GoogleGenAI, Type, Schema } from "@google/genai";
 import { Pokemon, TurnResult, Move } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Do not initialize at module level to prevent "process is not defined" or constructor errors from crashing the entire app on load.
+const getAiClient = () => {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    throw new Error("API Key is missing. Please set API_KEY in your Vercel Environment Variables.");
+  }
+  return new GoogleGenAI({ apiKey });
+};
 
 const turnSchema: Schema = {
   type: Type.OBJECT,
@@ -60,13 +67,16 @@ export const calculateTurn = async (
   `;
 
   try {
+    // Initialize here inside the try/catch
+    const ai = getAiClient();
+
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
       config: {
         responseMimeType: "application/json",
         responseSchema: turnSchema,
-        temperature: 0.7, // Add some randomness to damage rolls
+        temperature: 0.7,
       },
     });
 
@@ -92,8 +102,8 @@ export const calculateTurn = async (
     return {
       playerDamage: 10,
       opponentDamage: 10,
-      commentary: "通讯故障... 但战斗还在继续！双方都受到了一点伤害。",
-      opponentMove: "挣扎",
+      commentary: "通讯故障（请检查API KEY配置）... 战斗使用备用线路继续！",
+      opponentMove: "撞击",
       playerCrit: false,
       opponentCrit: false,
       effectiveness: 'neutral',
