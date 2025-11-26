@@ -1,0 +1,5 @@
+{
+  "name": "AI 宝可梦对战 (PokeBattle AI)",
+  "description": "基于 Google Gemini 驱动的宝可梦对战游戏。选择你的伙伴，与 AI 进行策略对决，享受实时生成的战斗解说。",
+  "requestFramePermissions": []
+}
